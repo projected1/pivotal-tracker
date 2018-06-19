@@ -79,6 +79,7 @@ set(CEFCLIENT_BROWSER_SHARED_BROWSER_SRCS
   ../shared/browser/main_message_loop_std.cc
   ../shared/browser/main_message_loop_std.h
   ../shared/browser/resource_util.h
+  ../shared/browser/shell_util.h
   )
 source_group(shared\\\\browser FILES ${CEFCLIENT_BROWSER_SHARED_BROWSER_SRCS})
 
@@ -172,6 +173,7 @@ source_group(tracker\\\\browser FILES ${CEFCLIENT_LINUX_BROWSER_SRCS})
 set(CEFCLIENT_LINUX_SHARED_BROWSER_SRCS
   ../shared/browser/main_message_loop_external_pump_linux.cc
   ../shared/browser/resource_util_posix.cc
+  ../shared/browser/shell_util_linux.cc
   )
 source_group(shared\\\\browser FILES ${CEFCLIENT_LINUX_SHARED_BROWSER_SRCS})
 
@@ -213,6 +215,7 @@ set(CEFCLIENT_MACOSX_SHARED_BROWSER_SRCS
   ../shared/browser/main_message_loop_external_pump_mac.mm
   ../shared/browser/resource_util_mac.mm
   ../shared/browser/resource_util_posix.cc
+  ../shared/browser/shell_util_mac.cc
   )
 source_group(shared\\\\browser FILES ${CEFCLIENT_MACOSX_SHARED_BROWSER_SRCS})
 
@@ -290,6 +293,7 @@ set(CEFCLIENT_WINDOWS_SHARED_BROWSER_SRCS
   ../shared/browser/resource_util_win.cc
   ../shared/browser/util_win.cc
   ../shared/browser/util_win.h
+  ../shared/browser/shell_util_win.cc
   )
 source_group(shared\\\\browser FILES ${CEFCLIENT_WINDOWS_SHARED_BROWSER_SRCS})
 

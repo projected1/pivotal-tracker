@@ -22,6 +22,7 @@
 #include "tracker/browser/test_runner.h"
 #include "shared/browser/extension_util.h"
 #include "shared/browser/resource_util.h"
+#include "shared/browser/shell_util.h"
 #include "shared/common/client_switches.h"
 
 namespace client {
@@ -531,9 +532,10 @@ bool ClientHandler::OnBeforePopup(
     bool* no_javascript_access) {
   CEF_REQUIRE_UI_THREAD();
 
-  // Return true to cancel the popup window.
-  return !CreatePopupWindow(browser, false, popupFeatures, windowInfo, client,
-                            settings);
+  shell_util::URLOpenInDefaultBrowser(target_url);
+
+  // Cancel the popup window.
+  return true;
 }
 
 void ClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
