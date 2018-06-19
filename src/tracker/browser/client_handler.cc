@@ -643,28 +643,6 @@ bool ClientHandler::OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
   return false;
 }
 
-bool ClientHandler::OnOpenURLFromTab(
-    CefRefPtr<CefBrowser> browser,
-    CefRefPtr<CefFrame> frame,
-    const CefString& target_url,
-    CefRequestHandler::WindowOpenDisposition target_disposition,
-    bool user_gesture) {
-  if (target_disposition == WOD_NEW_BACKGROUND_TAB ||
-      target_disposition == WOD_NEW_FOREGROUND_TAB) {
-    // Handle middle-click and ctrl + left-click by opening the URL in a new
-    // browser window.
-    RootWindowConfig config;
-    config.with_controls = true;
-    config.with_osr = is_osr();
-    config.url = target_url;
-    MainContext::Get()->GetRootWindowManager()->CreateRootWindow(config);
-    return true;
-  }
-
-  // Open the URL in the current browser window.
-  return false;
-}
-
 cef_return_value_t ClientHandler::OnBeforeResourceLoad(
     CefRefPtr<CefBrowser> browser,
     CefRefPtr<CefFrame> frame,

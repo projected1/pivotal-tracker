@@ -210,12 +210,6 @@ class ClientHandler : public CefClient,
                       CefRefPtr<CefRequest> request,
                       bool user_gesture,
                       bool is_redirect) OVERRIDE;
-  bool OnOpenURLFromTab(
-      CefRefPtr<CefBrowser> browser,
-      CefRefPtr<CefFrame> frame,
-      const CefString& target_url,
-      CefRequestHandler::WindowOpenDisposition target_disposition,
-      bool user_gesture) OVERRIDE;
   cef_return_value_t OnBeforeResourceLoad(
       CefRefPtr<CefBrowser> browser,
       CefRefPtr<CefFrame> frame,
