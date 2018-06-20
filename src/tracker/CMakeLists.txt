@@ -24,6 +24,8 @@ set(CEFCLIENT_BROWSER_BROWSER_SRCS
   browser/client_handler_std.cc
   browser/client_handler_std.h
   browser/client_types.h
+  browser/client_urls.cc
+  browser/client_urls.h
   browser/dialog_test.cc
   browser/dialog_test.h
   browser/drm_test.cc

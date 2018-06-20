@@ -4,6 +4,7 @@
 
 #include "tracker/browser/client_handler.h"
 
+#include <array>
 #include <stdio.h>
 #include <algorithm>
 #include <iomanip>
@@ -17,6 +18,7 @@
 #include "include/cef_ssl_status.h"
 #include "include/cef_x509_certificate.h"
 #include "include/wrapper/cef_closure_task.h"
+#include "tracker/browser/client_urls.h"
 #include "tracker/browser/main_context.h"
 #include "tracker/browser/root_window_manager.h"
 #include "tracker/browser/test_runner.h"
@@ -34,6 +36,30 @@ namespace client {
 #endif
 
 namespace {
+
+// URLs white-list.
+std::array<std::string, 14> url_whitelist {{
+  urls::kChromeDevTools,
+  urls::kTrackerStory,
+  urls::kTrackerSignin,
+  urls::kTrackerProfile,
+  urls::kTrackerReports,
+  urls::kTrackerServices,
+  urls::kTrackerProjects,
+  urls::kTrackerAccounts,
+  urls::kTrackerDashboard,
+  urls::kTrackerNProjects,
+  urls::kTrackerWorkspaces,
+  urls::kTrackerNWorkspaces,
+  urls::kTrackerFileAttachements,
+  urls::kTrackerNotificationSettings
+}};
+
+inline bool IsWhiteListedURL(const std::string& url) {
+  return url_whitelist.end() != std::find_if(
+    url_whitelist.begin(), url_whitelist.end(),
+    [&url](const std::string& s) { return 0 == url.find(s); });
+}
 
 // Custom menu command Ids.
 enum client_menu_ids {
@@ -532,7 +558,16 @@ bool ClientHandler::OnBeforePopup(
     bool* no_javascript_access) {
   CEF_REQUIRE_UI_THREAD();
 
-  shell_util::URLOpenInDefaultBrowser(target_url);
+  // Only manage the top-level pop-ups.
+  if (frame->IsMain()) {
+    // Load white-listed URLs in the main client window.
+    std::string url = target_url;
+    if (IsWhiteListedURL(url))
+      frame->LoadURL(url);
+    else
+      shell_util::URLOpenInDefaultBrowser(url);
+  }
+
 
   // Cancel the popup window.
   return true;
@@ -641,8 +676,35 @@ bool ClientHandler::OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
                                    bool is_redirect) {
   CEF_REQUIRE_UI_THREAD();
 
-  message_router_->OnBeforeBrowse(browser, frame);
-  return false;
+  bool is_cancel_navigation = false;
+
+  // Only intercept the top-level URLs.
+  if (frame->IsMain()) {
+    // Choose the URL to test against the white-list.
+    std::string url =
+      (!frame->GetURL().c_str() && request->GetReferrerURL().c_str()) ?
+      request->GetReferrerURL() : request->GetURL();
+    DCHECK(url.c_str());
+    DLOG(INFO) << url;
+
+    // Check if the URL is white-listed or not.
+    if (!IsWhiteListedURL(url)) {
+      is_cancel_navigation = true;
+
+      // If it's the first URL, load the app sign-in page instead.
+      if (frame->GetURL().empty())
+        frame->LoadURL(urls::kTrackerSignin);
+
+      // If it's not the first URL, open it in the default desktop browser.
+      else
+        shell_util::URLOpenInDefaultBrowser(url);
+    }
+  }
+
+  if (!is_cancel_navigation)
+    message_router_->OnBeforeBrowse(browser, frame);
+
+  return is_cancel_navigation;
 }
 
 cef_return_value_t ClientHandler::OnBeforeResourceLoad(
