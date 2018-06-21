@@ -160,6 +160,10 @@ void RootWindowViews::SetDeviceScaleFactor(float device_scale_factor) {
   NOTREACHED();
 }
 
+void RootWindowViews::ResizeToFitContent() {
+  REQUIRE_MAIN_THREAD();
+}
+
 float RootWindowViews::GetDeviceScaleFactor() const {
   REQUIRE_MAIN_THREAD();
   // Windowless rendering is not supported.

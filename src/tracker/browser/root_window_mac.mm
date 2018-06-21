@@ -11,6 +11,7 @@
 #include "include/cef_application_mac.h"
 #include "tracker/browser/browser_window_osr_mac.h"
 #include "tracker/browser/browser_window_std_mac.h"
+#include "tracker/browser/client_urls.h"
 #include "tracker/browser/main_context.h"
 #include "tracker/browser/temp_window.h"
 #include "tracker/browser/window_test_runner_mac.h"
@@ -404,6 +405,48 @@ void RootWindowMac::SetDeviceScaleFactor(float device_scale_factor) {
     browser_window_->SetDeviceScaleFactor(device_scale_factor);
 }
 
+void RootWindowMac::ResizeToFitContent() {
+  std::string url = GetBrowser()->GetMainFrame()->GetURL();
+
+  // Ignore the dev tools screen.
+  if (0 == url.find(urls::kChromeDevTools))
+    return;
+
+  // Skip, if still on the same page.
+  if (!last_url_.empty() && 0 == url.find(last_url_))
+    return;
+
+  CefSize window_size;
+
+  // Transition to sign-in page.
+  if (0 == url.find(urls::kTrackerSignin)) {
+    window_size.Set(800, 625);
+  }
+
+  // Transition from sign-in page.
+  else if (last_url_.empty() || 0 == last_url_.find(urls::kTrackerSignin)) {
+    window_size.Set(1050, 625);
+  }
+
+  if (!window_size.IsEmpty()) {
+    NSRect screen_rect = [[NSScreen mainScreen] frame];
+    DCHECK_GE(screen_rect.size.width, window_size.width);
+    DCHECK_GE(screen_rect.size.height, window_size.height);
+
+    CefRect bounds(
+      (screen_rect.size.width - window_size.width) / 2,
+      (screen_rect.size.height - window_size.height) / 2,
+      window_size.width,
+      window_size.height);
+
+    // Restore window position and resize it.
+    Show(ShowNormal);
+    SetBounds(bounds.x, bounds.y, bounds.width, bounds.height);
+  }
+
+  last_url_ = url;
+}
+
 float RootWindowMac::GetDeviceScaleFactor() const {
   REQUIRE_MAIN_THREAD();
 
@@ -701,6 +744,8 @@ void RootWindowMac::OnSetLoadingState(bool isLoading,
       GetBrowser()->GetHost()->SetAccessibilityState(STATE_ENABLED);
     }
   }
+
+  ResizeToFitContent();
 }
 
 void RootWindowMac::NotifyDestroyedIfDone() {

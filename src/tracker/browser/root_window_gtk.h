@@ -41,6 +41,7 @@ class RootWindowGtk : public RootWindow, public BrowserWindow::Delegate {
   void Close(bool force) OVERRIDE;
   void SetDeviceScaleFactor(float device_scale_factor) OVERRIDE;
   float GetDeviceScaleFactor() const OVERRIDE;
+  void ResizeToFitContent() OVERRIDE;
   CefRefPtr<CefBrowser> GetBrowser() const OVERRIDE;
   ClientWindowHandle GetWindowHandle() const OVERRIDE;
   bool WithWindowlessRendering() const OVERRIDE;
@@ -142,6 +143,9 @@ class RootWindowGtk : public RootWindow, public BrowserWindow::Delegate {
   bool force_close_;
   bool window_destroyed_;
   bool browser_destroyed_;
+
+  // Last main frame URL.
+  std::string last_url_;
 
   DISALLOW_COPY_AND_ASSIGN(RootWindowGtk);
 };

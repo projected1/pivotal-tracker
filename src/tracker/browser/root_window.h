@@ -166,6 +166,10 @@ class RootWindow
   // rendering.
   virtual void SetDeviceScaleFactor(float device_scale_factor) = 0;
 
+  // Resize window to accommodate the different webapp screens. It should
+  // improve the user experience for native desktop apps.
+  virtual void ResizeToFitContent() = 0;
+
   // Returns the device scale factor. Only used in combination with off-screen
   // rendering.
   virtual float GetDeviceScaleFactor() const = 0;

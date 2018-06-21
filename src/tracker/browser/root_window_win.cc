@@ -11,6 +11,7 @@
 #include "include/cef_app.h"
 #include "tracker/browser/browser_window_osr_win.h"
 #include "tracker/browser/browser_window_std_win.h"
+#include "tracker/browser/client_urls.h"
 #include "tracker/browser/main_context.h"
 #include "tracker/browser/resource.h"
 #include "tracker/browser/temp_window.h"
@@ -264,6 +265,69 @@ void RootWindowWin::SetDeviceScaleFactor(float device_scale_factor) {
 
   if (browser_window_ && with_osr_)
     browser_window_->SetDeviceScaleFactor(device_scale_factor);
+}
+
+void RootWindowWin::ResizeToFitContent() {
+  std::string url = GetBrowser()->GetMainFrame()->GetURL();
+
+  // Ignore the dev tools screen.
+  if (0 == url.find(urls::kChromeDevTools))
+    return;
+
+  // Skip, if still on the same page.
+  if (!last_url_.empty() && 0 == url.find(last_url_))
+    return;
+
+  CefSize window_size;
+
+  // Transition to sign-in page.
+  if (0 == url.find(urls::kTrackerSignin)) {
+    window_size.Set(800, 625);
+  }
+
+  // Transition from sign-in page.
+  else if (last_url_.empty() || 0 == last_url_.find(urls::kTrackerSignin)) {
+    window_size.Set(1050, 625);
+  }
+
+  if (!window_size.IsEmpty()) {
+    const CefSize screen_size(
+      ::GetSystemMetrics(SM_CXSCREEN),
+      ::GetSystemMetrics(SM_CYSCREEN));
+    DCHECK_GE(screen_size.width, window_size.width);
+    DCHECK_GE(screen_size.height, window_size.height);
+
+    CefRect bounds(
+      (screen_size.width - window_size.width) / 2,
+      (screen_size.height - window_size.height) / 2,
+      window_size.width,
+      window_size.height);
+
+    // Adjust the window size to account for window frame and controls.
+    RECT window_rect = {
+      bounds.x,
+      bounds.y,
+      bounds.x + bounds.width,
+      bounds.y + bounds.height
+    };
+
+    ::AdjustWindowRect(
+      &window_rect,
+      ::GetWindowLong(hwnd_, GWL_STYLE),
+      with_controls_);
+
+    bounds.Set(
+      window_rect.left,
+      window_rect.top,
+      window_rect.right - window_rect.left,
+      window_rect.bottom - window_rect.top);
+
+    // Restore window position and resize it.
+    Show(ShowNormal);
+    SetBounds(bounds.x, bounds.y, bounds.width, bounds.height);
+  }
+
+  last_url_ = url;
 }
 
 float RootWindowWin::GetDeviceScaleFactor() const {
@@ -1066,6 +1130,9 @@ void RootWindowWin::OnSetLoadingState(bool isLoading,
     EnableWindow(stop_hwnd_, isLoading);
     EnableWindow(edit_hwnd_, TRUE);
   }
+
+  if (!isLoading)
+    ResizeToFitContent();
 }
 
 namespace {

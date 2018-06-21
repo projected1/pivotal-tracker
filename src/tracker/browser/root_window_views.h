@@ -42,6 +42,7 @@ class RootWindowViews : public RootWindow,
   void SetBounds(int x, int y, size_t width, size_t height) OVERRIDE;
   void Close(bool force) OVERRIDE;
   void SetDeviceScaleFactor(float device_scale_factor) OVERRIDE;
+  void ResizeToFitContent() OVERRIDE;
   float GetDeviceScaleFactor() const OVERRIDE;
   CefRefPtr<CefBrowser> GetBrowser() const OVERRIDE;
   ClientWindowHandle GetWindowHandle() const OVERRIDE;

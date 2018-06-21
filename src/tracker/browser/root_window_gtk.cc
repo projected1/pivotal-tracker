@@ -15,6 +15,7 @@
 #include "include/cef_app.h"
 #include "tracker/browser/browser_window_osr_gtk.h"
 #include "tracker/browser/browser_window_std_gtk.h"
+#include "tracker/browser/client_urls.h"
 #include "tracker/browser/main_context.h"
 #include "tracker/browser/resource.h"
 #include "tracker/browser/temp_window.h"
@@ -194,6 +195,54 @@ void RootWindowGtk::SetDeviceScaleFactor(float device_scale_factor) {
 
   if (browser_window_ && with_osr_)
     browser_window_->SetDeviceScaleFactor(device_scale_factor);
+}
+
+void RootWindowGtk::ResizeToFitContent() {
+  std::string url = GetBrowser()->GetMainFrame()->GetURL();
+
+  // Ignore the dev tools screen.
+  if (0 == url.find(urls::kChromeDevTools))
+    return;
+
+  // Skip, if still on the same page.
+  if (!last_url_.empty() && 0 == url.find(last_url_))
+    return;
+
+  CefSize window_size;
+
+  // Transition to sign-in page.
+  if (0 == url.find(urls::kTrackerSignin)) {
+    window_size.Set(800, 625);
+  }
+
+  // Transition from sign-in page.
+  else if (last_url_.empty() || 0 == last_url_.find(urls::kTrackerSignin)) {
+    window_size.Set(1050, 625);
+  }
+
+  if (!window_size.IsEmpty()) {
+    std::unique_ptr<Display, decltype(&XCloseDisplay)> display(
+      ::XOpenDisplay(nullptr), ::XCloseDisplay);
+    if (display) {
+      Screen* screen = ::XDefaultScreenOfDisplay(display.get());
+      if (screen) {
+        DCHECK_GE(screen->width, window_size.width);
+        DCHECK_GE(screen->height, window_size.height);
+
+        CefRect bounds(
+          (screen->width - window_size.width) / 2,
+          (screen->height - window_size.height) / 2,
+          window_size.width,
+          window_size.height);
+
+        // Restore window position and resize it.
+        Show(ShowNormal);
+        SetBounds(bounds.x, bounds.y, bounds.width, bounds.height);
+      }
+    }
+  }
+
+  last_url_ = url;
 }
 
 float RootWindowGtk::GetDeviceScaleFactor() const {
@@ -445,6 +494,8 @@ void RootWindowGtk::OnSetLoadingState(bool isLoading,
     gtk_widget_set_sensitive(GTK_WIDGET(back_button_), canGoBack);
     gtk_widget_set_sensitive(GTK_WIDGET(forward_button_), canGoForward);
   }
+
+  ResizeToFitContent();
 }
 
 void RootWindowGtk::OnSetDraggableRegions(

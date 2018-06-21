@@ -43,6 +43,7 @@ class RootWindowWin : public RootWindow, public BrowserWindow::Delegate {
   void SetBounds(int x, int y, size_t width, size_t height) OVERRIDE;
   void Close(bool force) OVERRIDE;
   void SetDeviceScaleFactor(float device_scale_factor) OVERRIDE;
+  void ResizeToFitContent() OVERRIDE;
   float GetDeviceScaleFactor() const OVERRIDE;
   CefRefPtr<CefBrowser> GetBrowser() const OVERRIDE;
   ClientWindowHandle GetWindowHandle() const OVERRIDE;
@@ -156,6 +157,9 @@ class RootWindowWin : public RootWindow, public BrowserWindow::Delegate {
   bool browser_destroyed_;
 
   bool called_enable_non_client_dpi_scaling_;
+
+  // Last main frame URL.
+  std::string last_url_;
 
   DISALLOW_COPY_AND_ASSIGN(RootWindowWin);
 };

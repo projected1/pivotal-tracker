@@ -49,6 +49,7 @@ class RootWindowMac : public RootWindow, public BrowserWindow::Delegate {
   void SetBounds(int x, int y, size_t width, size_t height) OVERRIDE;
   void Close(bool force) OVERRIDE;
   void SetDeviceScaleFactor(float device_scale_factor) OVERRIDE;
+  void ResizeToFitContent() OVERRIDE;
   float GetDeviceScaleFactor() const OVERRIDE;
   CefRefPtr<CefBrowser> GetBrowser() const OVERRIDE;
   ClientWindowHandle GetWindowHandle() const OVERRIDE;
@@ -106,6 +107,9 @@ class RootWindowMac : public RootWindow, public BrowserWindow::Delegate {
 
   bool window_destroyed_;
   bool browser_destroyed_;
+
+  // Last main frame URL.
+  std::string last_url_;
 
   DISALLOW_COPY_AND_ASSIGN(RootWindowMac);
 };
