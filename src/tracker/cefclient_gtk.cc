@@ -125,8 +125,6 @@ int RunMain(int argc, char* argv[]) {
   test_runner::RegisterSchemeHandlers();
 
   RootWindowConfig window_config;
-  window_config.with_controls =
-      !command_line->HasSwitch(switches::kHideControls);
   window_config.with_osr = settings.windowless_rendering_enabled ? true : false;
 
   // Create the first window.

@@ -10,7 +10,7 @@
 namespace client {
 
 RootWindowConfig::RootWindowConfig()
-    : with_controls(true),
+    : with_controls(false),
       with_osr(false),
       with_extension(false),
       initially_hidden(false),

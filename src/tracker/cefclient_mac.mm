@@ -384,7 +384,6 @@ int RunMain(int argc, char* argv[]) {
 
   // Create the application delegate and window.
   ClientAppDelegate* delegate = [[ClientAppDelegate alloc]
-      initWithControls:!command_line->HasSwitch(switches::kHideControls)
                 andOsr:settings.windowless_rendering_enabled ? true : false];
   [delegate performSelectorOnMainThread:@selector(createApplication:)
                              withObject:nil
