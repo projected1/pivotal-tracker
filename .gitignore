@@ -57,6 +57,7 @@ Thumbs.db
 *.bin
 libcef_dll_wrapper/
 src/[Rr]esources/
+app.cache
 
 # =========================
 # C++

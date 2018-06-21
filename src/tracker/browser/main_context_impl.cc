@@ -145,8 +145,7 @@ void MainContextImpl::PopulateSettings(CefSettings* settings) {
         command_line_->HasSwitch(switches::kExternalMessagePump);
   }
 
-  CefString(&settings->cache_path) =
-      command_line_->GetSwitchValue(switches::kCachePath);
+  CefString(&settings->cache_path) = GetAppWorkingDirectory() + "app.cache";
 
   if (use_windowless_rendering_)
     settings->windowless_rendering_enabled = true;
