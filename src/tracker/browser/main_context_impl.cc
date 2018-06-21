@@ -155,6 +155,10 @@ void MainContextImpl::PopulateSettings(CefSettings* settings) {
 
   // Disable processing of CEF/Chromium command-line.
   settings->command_line_args_disabled = 1;
+
+#if defined(NDEBUG)
+  settings->log_severity = LOGSEVERITY_ERROR;
+#endif
 }
 
 void MainContextImpl::PopulateBrowserSettings(CefBrowserSettings* settings) {
