@@ -153,6 +153,9 @@ void MainContextImpl::PopulateSettings(CefSettings* settings) {
 
   if (browser_background_color_ != 0)
     settings->background_color = browser_background_color_;
+
+  // Disable processing of CEF/Chromium command-line.
+  settings->command_line_args_disabled = 1;
 }
 
 void MainContextImpl::PopulateBrowserSettings(CefBrowserSettings* settings) {
