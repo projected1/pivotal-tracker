@@ -43,13 +43,16 @@ CefRefPtr<CefCommandLine> CefCommandLine::GetGlobalCommandLine() {
     return NULL;
   }
 
-  // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
-
+#if defined(NDEBUG)
+  // Discard the command line in release builds.
+  return CreateCommandLine();
+#else
   // Execute
   cef_command_line_t* _retval = cef_command_line_get_global();
 
   // Return type: refptr_same
   return CefCommandLineCToCpp::Wrap(_retval);
+#endif
 }
 
 // VIRTUAL METHODS - Body may be edited by hand.

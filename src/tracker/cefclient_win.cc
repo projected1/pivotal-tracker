@@ -62,6 +62,11 @@ int RunMain(HINSTANCE hInstance, int nCmdShow) {
   else if (process_type == ClientApp::OtherProcess)
     app = new ClientAppOther();
 
+#if defined(NDEBUG)
+  // Discard the command line in release builds.
+  command_line->Reset();
+#endif
+
   // Execute the secondary process, if any.
   int exit_code = CefExecuteProcess(main_args, app, sandbox_info);
   if (exit_code >= 0)

@@ -356,6 +356,11 @@ int RunMain(int argc, char* argv[]) {
   if (process_type == ClientApp::BrowserProcess)
     app = new ClientAppBrowser();
 
+#if defined(NDEBUG)
+  // Discard the command line in release builds.
+  command_line->Reset();
+#endif
+
   // Create the main context object.
   scoped_ptr<MainContextImpl> context(new MainContextImpl(command_line, true));
 

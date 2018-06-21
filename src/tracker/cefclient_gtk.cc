@@ -77,6 +77,11 @@ int RunMain(int argc, char* argv[]) {
     app = new ClientAppOther();
   }
 
+#if defined(NDEBUG)
+  // Discard the command line in release builds.
+  command_line->Reset();
+#endif
+
   // Execute the secondary process, if any.
   int exit_code = CefExecuteProcess(main_args, app, NULL);
   if (exit_code >= 0)
