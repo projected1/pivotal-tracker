@@ -280,14 +280,29 @@ void RootWindowWin::ResizeToFitContent() {
 
   CefSize window_size;
 
+  const DWORD dwStyle =
+    WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_THICKFRAME;
+
   // Transition to sign-in page.
   if (0 == url.find(urls::kTrackerSignin)) {
     window_size.Set(800, 625);
+
+    // Disable window resizing.
+    ::SetWindowLong(
+      hwnd_,
+      GWL_STYLE,
+      ::GetWindowLong(hwnd_, GWL_STYLE) & ~dwStyle);
   }
 
   // Transition from sign-in page.
   else if (last_url_.empty() || 0 == last_url_.find(urls::kTrackerSignin)) {
     window_size.Set(1050, 625);
+
+    // Enable window resizing.
+    ::SetWindowLong(
+      hwnd_,
+      GWL_STYLE,
+      ::GetWindowLong(hwnd_, GWL_STYLE) | dwStyle);
   }
 
   if (!window_size.IsEmpty()) {

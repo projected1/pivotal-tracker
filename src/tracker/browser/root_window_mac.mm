@@ -421,11 +421,42 @@ void RootWindowMac::ResizeToFitContent() {
   // Transition to sign-in page.
   if (0 == url.find(urls::kTrackerSignin)) {
     window_size.Set(800, 625);
+
+    // Disable window resizing.
+    CGSize fixed_size;
+    fixed_size.width = window_size.width;
+    fixed_size.height = window_size.height;
+
+    [window_ setMinSize:fixed_size];
+    [window_ setMaxSize:fixed_size];
+
+    window_.collectionBehavior &=
+      ~(NSWindowCollectionBehaviorFullScreenPrimary |
+        NSWindowCollectionBehaviorFullScreenAuxiliary);
+    window_.collectionBehavior |= NSWindowCollectionBehaviorFullScreenNone;
   }
 
   // Transition from sign-in page.
   else if (last_url_.empty() || 0 == last_url_.find(urls::kTrackerSignin)) {
     window_size.Set(1050, 625);
+
+    // Enable window resizing.
+    CGSize min_size;
+    min_size.width = 0;
+    min_size.height = 0;
+
+    CGSize max_size;
+    NSRect screen_rect = [[NSScreen mainScreen] frame];
+    max_size.width = screen_rect.size.width;
+    max_size.height = screen_rect.size.height;
+
+    [window_ setMinSize:min_size];
+    [window_ setMaxSize:max_size];
+
+    window_.collectionBehavior &= ~NSWindowCollectionBehaviorFullScreenNone;
+    window_.collectionBehavior |=
+      NSWindowCollectionBehaviorFullScreenPrimary |
+      NSWindowCollectionBehaviorFullScreenAuxiliary;
   }
 
   if (!window_size.IsEmpty()) {

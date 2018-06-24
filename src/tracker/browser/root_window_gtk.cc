@@ -213,11 +213,46 @@ void RootWindowGtk::ResizeToFitContent() {
   // Transition to sign-in page.
   if (0 == url.find(urls::kTrackerSignin)) {
     window_size.Set(800, 625);
+
+    // Enforce minimum window dimensions, so that the window size
+    // does not collapse when set to non-resizable.
+    GdkGeometry hints;
+    hints.min_width = window_size.width;
+    hints.min_height = window_size.height;
+
+    gtk_window_set_geometry_hints(
+      GTK_WINDOW(window_),
+      nullptr, // Ignored
+      &hints,
+      GDK_HINT_MIN_SIZE);
+
+    // Disable window resizing.
+    gtk_window_set_resizable(GTK_WINDOW(window_), FALSE);
   }
 
   // Transition from sign-in page.
   else if (last_url_.empty() || 0 == last_url_.find(urls::kTrackerSignin)) {
     window_size.Set(1050, 625);
+
+    // Reset the minimum window dimensions restriction.
+    // TODO(tracker): We should reset the geometry hints by setting width and
+    //                height to "0". However, once gtk_window_set_geometry_hints
+    //                is called with "0", gdk_window_move_resize fails to resize
+    //                the window. Until this is resolved, we set the minimum
+    //                window dimensions to the resized window dimensions,
+    //                instead of resetting the hints.
+    GdkGeometry hints;
+    hints.min_width = window_size.width;
+    hints.min_height = window_size.height;
+
+    gtk_window_set_geometry_hints(
+      GTK_WINDOW(window_),
+      nullptr, // Ignored
+      &hints,
+      GDK_HINT_MIN_SIZE);
+
+    // Enable window resizing.
+    gtk_window_set_resizable(GTK_WINDOW(window_), TRUE);
   }
 
   if (!window_size.IsEmpty()) {
