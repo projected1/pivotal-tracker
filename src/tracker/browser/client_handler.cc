@@ -427,6 +427,10 @@ bool ClientHandler::OnConsoleMessage(CefRefPtr<CefBrowser> browser,
                                      int line) {
   CEF_REQUIRE_UI_THREAD();
 
+#if defined(NDEBUG)
+  return true;
+#endif
+
   FILE* file = fopen(console_log_file_.c_str(), "a");
   if (file) {
     std::stringstream ss;
