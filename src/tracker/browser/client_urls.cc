@@ -18,6 +18,7 @@ const char kTrackerWorkspaces[] = "https://www.pivotaltracker.com/workspaces";
 const char kTrackerNWorkspaces[] = "https://www.pivotaltracker.com/n/workspaces/";
 const char kTrackerFileAttachements[] = "https://www.pivotaltracker.com/file_attachments/";
 const char kTrackerNotificationSettings[] = "https://www.pivotaltracker.com/notification_settings";
+const char kTrackerSigninAndReturnToProject[] = "https://www.pivotaltracker.com/signin?return_to=%2Fn%2Fprojects%2F";
 
 }  // namespace urls
 }  // namespace client

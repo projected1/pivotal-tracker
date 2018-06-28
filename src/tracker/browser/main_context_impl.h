@@ -12,11 +12,13 @@
 #include "include/cef_command_line.h"
 #include "tracker/browser/main_context.h"
 #include "tracker/browser/root_window_manager.h"
+#include "tracker/browser/settings_serializer.h"
 
 namespace client {
 
 // Used to store global context in the browser process.
-class MainContextImpl : public MainContext {
+class MainContextImpl : public MainContext,
+                        public ClientSettings::Delegate {
  public:
   MainContextImpl(CefRefPtr<CefCommandLine> command_line,
                   bool terminate_when_all_windows_closed);
@@ -33,6 +35,10 @@ class MainContextImpl : public MainContext {
   void PopulateBrowserSettings(CefBrowserSettings* settings) OVERRIDE;
   void PopulateOsrSettings(OsrRenderer::Settings* settings) OVERRIDE;
   RootWindowManager* GetRootWindowManager() OVERRIDE;
+  ClientSettings* GetClientSettings() OVERRIDE;
+
+  // ClientSettings::Delegate members.
+  void OnSettingsChanged() OVERRIDE;
 
   // Initialize CEF and associated main context state. This method must be
   // called on the same thread that created this object.
@@ -71,6 +77,9 @@ class MainContextImpl : public MainContext {
   bool use_views_;
 
   scoped_ptr<RootWindowManager> root_window_manager_;
+  scoped_ptr<ClientSettings> client_settings_;
+
+  SettingsSerializer settings_serializer_;
 
   // Used to verify that methods are called on the correct thread.
   base::ThreadChecker thread_checker_;

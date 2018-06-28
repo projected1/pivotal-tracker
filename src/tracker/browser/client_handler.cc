@@ -647,6 +647,14 @@ void ClientHandler::OnLoadingStateChange(CefRefPtr<CefBrowser> browser,
                                          bool canGoForward) {
   CEF_REQUIRE_UI_THREAD();
 
+  if (!isLoading) {
+    std::string url = browser->GetMainFrame()->GetURL().ToString();
+    if (0 == url.find(urls::kTrackerNProjects)) {
+      std::string project_id = url.substr(url.rfind('/') + 1);
+      MainContext::Get()->GetClientSettings()->SetProjectId(project_id);
+    }
+  }
+
   NotifyLoadingState(isLoading, canGoBack, canGoForward);
 }
 

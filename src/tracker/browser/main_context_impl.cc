@@ -7,13 +7,11 @@
 #include "include/cef_parser.h"
 #include "include/cef_web_plugin.h"
 #include "shared/common/client_switches.h"
+#include "tracker/browser/client_urls.h"
 
 namespace client {
 
 namespace {
-
-// The default URL to load in a browser window.
-const char kDefaultUrl[] = "https://www.pivotaltracker.com/signin";
 
 // Returns the ARGB value for |color|.
 cef_color_t ParseColor(const std::string& color) {
@@ -49,11 +47,18 @@ MainContextImpl::MainContextImpl(CefRefPtr<CefCommandLine> command_line,
       use_views_(false) {
   DCHECK(command_line_.get());
 
+  // Init the client settings and subscribe for settings changes.
+  client_settings_.reset(new ClientSettings(this));
+  settings_serializer_.Deserialize(*client_settings_.get());
+
   // Set the main URL.
   if (command_line_->HasSwitch(switches::kUrl))
     main_url_ = command_line_->GetSwitchValue(switches::kUrl);
-  if (main_url_.empty())
-    main_url_ = kDefaultUrl;
+  if (main_url_.empty()) {
+    std::string project_id = client_settings_->GetProjectId();
+    main_url_ = project_id.empty() ? urls::kTrackerSignin :
+      std::string(urls::kTrackerSigninAndReturnToProject) + project_id;
+  }
 
   // Whether windowless (off-screen) rendering will be used.
   use_windowless_rendering_ =
@@ -184,6 +189,14 @@ void MainContextImpl::PopulateOsrSettings(OsrRenderer::Settings* settings) {
 RootWindowManager* MainContextImpl::GetRootWindowManager() {
   DCHECK(InValidState());
   return root_window_manager_.get();
+}
+
+ClientSettings* MainContextImpl::GetClientSettings() {
+  return client_settings_.get();
+}
+
+void MainContextImpl::OnSettingsChanged() {
+  settings_serializer_.Serialize(*client_settings_.get());
 }
 
 bool MainContextImpl::Initialize(const CefMainArgs& args,

@@ -11,6 +11,7 @@
 #include "include/base/cef_ref_counted.h"
 #include "include/internal/cef_types_wrappers.h"
 #include "tracker/browser/osr_renderer.h"
+#include "tracker/browser/client_settings.h"
 
 namespace client {
 
@@ -51,6 +52,9 @@ class MainContext {
 
   // Returns the object used to create/manage RootWindow instances.
   virtual RootWindowManager* GetRootWindowManager() = 0;
+
+  // Returns the object used to store serialized client settings.
+  virtual ClientSettings* GetClientSettings() = 0;
 
  protected:
   MainContext();

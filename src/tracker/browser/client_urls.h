@@ -22,6 +22,7 @@ extern const char kTrackerWorkspaces[];
 extern const char kTrackerNWorkspaces[];
 extern const char kTrackerFileAttachements[];
 extern const char kTrackerNotificationSettings[];
+extern const char kTrackerSigninAndReturnToProject[];
 
 }  // namespace urls
 }  // namespace client

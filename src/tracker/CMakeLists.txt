@@ -17,6 +17,8 @@ set(CEFCLIENT_BROWSER_BROWSER_SRCS
   browser/client_app_delegates_browser.cc
   browser/client_browser.cc
   browser/client_browser.h
+  browser/client_settings.cc
+  browser/client_settings.h
   browser/client_handler.cc
   browser/client_handler.h
   browser/client_handler_osr.cc
@@ -53,6 +55,8 @@ set(CEFCLIENT_BROWSER_BROWSER_SRCS
   browser/scheme_test.h
   browser/server_test.cc
   browser/server_test.h
+  browser/settings_serializer.cc
+  browser/settings_serializer.h
   browser/temp_window.h
   browser/test_runner.cc
   browser/test_runner.h
