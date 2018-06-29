@@ -63,6 +63,7 @@ void SettingsSerializer::Serialize(const ClientSettings& settings) {
     return;
 
   SerializeString(*ofile, settings.project_id_);
+  SerializePrimitive(*ofile, settings.maximized_);
 }
 
 ///
@@ -80,6 +81,7 @@ void SettingsSerializer::Deserialize(ClientSettings& settings) {
     return;
 
   DeserializeString(*ifile, settings.project_id_);
+  DeserializePrimitive(*ifile, settings.maximized_);
 }
 
 }  // namespace client

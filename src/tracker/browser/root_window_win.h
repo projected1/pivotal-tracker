@@ -82,7 +82,7 @@ class RootWindowWin : public RootWindow, public BrowserWindow::Delegate {
   void OnPaint();
   void OnFocus();
   void OnActivate(bool active);
-  void OnSize(bool minimized);
+  void OnSize(UINT size);
   void OnMove();
   void OnDpiChanged(WPARAM wParam, LPARAM lParam);
   bool OnEraseBkgnd();
@@ -160,6 +160,9 @@ class RootWindowWin : public RootWindow, public BrowserWindow::Delegate {
 
   // Last main frame URL.
   std::string last_url_;
+
+  // Is window maximized.
+  bool is_maximized_;
 
   DISALLOW_COPY_AND_ASSIGN(RootWindowWin);
 };

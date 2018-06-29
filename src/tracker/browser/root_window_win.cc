@@ -127,7 +127,8 @@ RootWindowWin::RootWindowWin()
       find_match_case_last_(false),
       window_destroyed_(false),
       browser_destroyed_(false),
-      called_enable_non_client_dpi_scaling_(false) {
+      called_enable_non_client_dpi_scaling_(false),
+      is_maximized_(false) {
   find_buff_[0] = 0;
 
   // Create a HRGN representing the draggable window area.
@@ -244,8 +245,11 @@ void RootWindowWin::SetBounds(int x, int y, size_t width, size_t height) {
   REQUIRE_MAIN_THREAD();
 
   if (hwnd_) {
-    SetWindowPos(hwnd_, NULL, x, y, static_cast<int>(width),
-                 static_cast<int>(height), SWP_NOZORDER);
+    bool is_maximized = ::GetWindowLong(hwnd_, GWL_STYLE) & WS_MAXIMIZE;
+    if (!is_maximized) {
+      SetWindowPos(hwnd_, NULL, x, y, static_cast<int>(width),
+                   static_cast<int>(height), SWP_NOZORDER);
+    }
   }
 }
 
@@ -291,7 +295,7 @@ void RootWindowWin::ResizeToFitContent() {
     ::SetWindowLong(
       hwnd_,
       GWL_STYLE,
-      ::GetWindowLong(hwnd_, GWL_STYLE) & ~dwStyle);
+      ::GetWindowLong(hwnd_, GWL_STYLE) & ~dwStyle & ~WS_MAXIMIZE);
   }
 
   // Transition from sign-in page.
@@ -338,7 +342,7 @@ void RootWindowWin::ResizeToFitContent() {
       window_rect.bottom - window_rect.top);
 
     // Restore window position and resize it.
-    Show(ShowNormal);
+    Show(is_maximized_ ? ShowMaximized : ShowNormal);
     SetBounds(bounds.x, bounds.y, bounds.width, bounds.height);
   }
 
@@ -411,7 +415,9 @@ void RootWindowWin::CreateRootWindow(const CefBrowserSettings& settings,
   find_message_id_ = RegisterWindowMessage(FINDMSGSTRING);
   CHECK(find_message_id_);
 
-  const DWORD dwStyle = WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN;
+  is_maximized_ = MainContext::Get()->GetClientSettings()->GetMaximized();
+  const DWORD dwStyle =
+    WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | (is_maximized_ ? WS_MAXIMIZE : 0);
 
   int x, y, width, height;
   if (::IsRectEmpty(&start_rect_)) {
@@ -449,7 +455,7 @@ void RootWindowWin::CreateRootWindow(const CefBrowserSettings& settings,
 
   if (!initially_hidden) {
     // Show this window.
-    Show(ShowNormal);
+    Show(is_maximized_ ? ShowMaximized : ShowNormal);
   }
 }
 
@@ -603,7 +609,7 @@ LRESULT CALLBACK RootWindowWin::RootWndProc(HWND hWnd,
       return 0;
 
     case WM_SIZE:
-      self->OnSize(wParam == SIZE_MINIMIZED);
+      self->OnSize(wParam);
       break;
 
     case WM_MOVING:
@@ -697,8 +703,12 @@ void RootWindowWin::OnActivate(bool active) {
     delegate_->OnRootWindowActivated(this);
 }
 
-void RootWindowWin::OnSize(bool minimized) {
-  if (minimized) {
+void RootWindowWin::OnSize(UINT size) {
+  if (size != SIZE_MINIMIZED) {
+    is_maximized_ = (size == SIZE_MAXIMIZED);
+    MainContext::Get()->GetClientSettings()->SetMaximized(is_maximized_);
+  }
+  else {
     // Notify the browser window that it was hidden and do nothing further.
     if (browser_window_)
       browser_window_->Hide();
@@ -1053,7 +1063,8 @@ void RootWindowWin::OnBrowserCreated(CefRefPtr<CefBrowser> browser) {
     CreateRootWindow(CefBrowserSettings(), false);
   } else {
     // Make sure the browser is sized correctly.
-    OnSize(false);
+    bool is_maximized = ::GetWindowLong(hwnd_, GWL_STYLE) & WS_MAXIMIZE;
+    OnSize(is_maximized ? SIZE_MAXIMIZED : SIZE_RESTORED);
   }
 
   delegate_->OnBrowserCreated(this, browser);

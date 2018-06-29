@@ -21,12 +21,16 @@ class ClientSettings : public CefBaseRefCounted {
   const std::string& GetProjectId() const;
   void SetProjectId(const std::string& project_id);
 
+  bool GetMaximized() const;
+  void SetMaximized(bool maximized);
+
  private:
   friend class SettingsSerializer;
 
   Delegate* delegate_;
 
   std::string project_id_;
+  bool maximized_;
 
   IMPLEMENT_REFCOUNTING(ClientSettings);
   DISALLOW_COPY_AND_ASSIGN(ClientSettings);
