@@ -746,13 +746,8 @@ void Alert(CefRefPtr<CefBrowser> browser, const std::string& message) {
       return;
   }
 
-  // Escape special characters in the message.
-  std::string msg = StringReplace(message, "\\", "\\\\");
-  msg = StringReplace(msg, "'", "\\'");
-
-  // Execute a JavaScript alert().
-  CefRefPtr<CefFrame> frame = browser->GetMainFrame();
-  frame->ExecuteJavaScript("alert('" + msg + "');", frame->GetURL(), 0);
+  // Log message instead of executing as a JavaScript alert().
+  DLOG(INFO) << message;
 }
 
 bool IsTestURL(const std::string& url, const std::string& path) {
