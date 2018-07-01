@@ -101,6 +101,7 @@ int RunMain(HINSTANCE hInstance, int nCmdShow) {
 
   RootWindowConfig window_config;
   window_config.with_osr = settings.windowless_rendering_enabled ? true : false;
+  window_config.initially_hidden = true;
 
   // Create the first window.
   context->GetRootWindowManager()->CreateRootWindow(window_config);
