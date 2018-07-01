@@ -4,6 +4,7 @@
 #include <CoreFoundation/CFBundle.h>
 #include <ApplicationServices/ApplicationServices.h>
 
+#include "include/base/cef_logging.h"
 #include "shared/browser/shell_util.h"
 
 namespace client {
@@ -29,6 +30,11 @@ void URLOpenInDefaultBrowser(const std::string& url) {
     ::LSOpenCFURLRef(
       cf_url.get(),
       nullptr); // CFURL that identifies the launched application [out]
+}
+
+void FileOpenInDefaultFileManager(const std::string& file) {
+  NOTIMPLEMENTED() << "Open file in default file manager";
+  return;
 }
 
 }  // namespace shell_util

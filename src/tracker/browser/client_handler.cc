@@ -494,9 +494,7 @@ void ClientHandler::OnDownloadUpdated(
   CEF_REQUIRE_UI_THREAD();
 
   if (download_item->IsComplete()) {
-    test_runner::Alert(browser, "File \"" +
-                                    download_item->GetFullPath().ToString() +
-                                    "\" downloaded successfully.");
+    shell_util::FileOpenInDefaultFileManager(download_item->GetFullPath());
   }
 }
 

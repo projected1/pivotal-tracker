@@ -7,6 +7,7 @@ namespace client {
 namespace shell_util {
 
 void URLOpenInDefaultBrowser(const std::string& url);
+void FileOpenInDefaultFileManager(const std::string& file);
 
 }  // namespace shell_util
 }  // namespace client

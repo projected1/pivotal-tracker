@@ -2,6 +2,7 @@
 #include <sstream>
 
 #include "shared/browser/shell_util.h"
+#include "include/base/cef_logging.h"
 
 namespace client {
 namespace shell_util {
@@ -35,6 +36,11 @@ void URLOpenInDefaultBrowser(const std::string& url) {
   std::stringstream ss;
   ss << kOpenAction << ' ' << url << " &";
   std::system(ss.str().c_str());
+}
+
+void FileOpenInDefaultFileManager(const std::string& file) {
+  NOTIMPLEMENTED() << "Open file in default file manager";
+  return;
 }
 
 }  // namespace shell_util
