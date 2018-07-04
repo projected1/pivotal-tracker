@@ -38,9 +38,12 @@ namespace client {
 namespace {
 
 // URLs white-list.
-std::array<std::string, 15> url_whitelist {{
+std::array<std::string, 19> url_whitelist {{
   urls::kChromeDevTools,
   urls::kSplashScreen,
+  urls::kGoogleAccounts,
+  urls::kGoogleMyAccount,
+  urls::kYoutubeAccounts,
   urls::kTrackerStory,
   urls::kTrackerSignin,
   urls::kTrackerProfile,
@@ -52,6 +55,7 @@ std::array<std::string, 15> url_whitelist {{
   urls::kTrackerNProjects,
   urls::kTrackerWorkspaces,
   urls::kTrackerNWorkspaces,
+  urls::kTrackerGoogleSignin,
   urls::kTrackerFileAttachements,
   urls::kTrackerNotificationSettings
 }};

@@ -4,6 +4,8 @@
 
 #include "tracker/browser/root_window_win.h"
 
+#include <array>
+
 #include <shellscalingapi.h>
 
 #include "include/base/cef_bind.h"
@@ -28,6 +30,21 @@
 namespace client {
 
 namespace {
+
+// App signin URLs.
+std::array<std::string, 5> signin_urls {{
+  urls::kGoogleAccounts,
+  urls::kGoogleMyAccount,
+  urls::kYoutubeAccounts,
+  urls::kTrackerSignin,
+  urls::kTrackerGoogleSignin,
+}};
+
+inline bool IsSigninURL(const std::string& url) {
+  return signin_urls.end() != std::find_if(
+    signin_urls.begin(), signin_urls.end(),
+    [&url](const std::string& s) { return 0 == url.find(s); });
+}
 
 // Message handler for the About box.
 INT_PTR CALLBACK AboutWndProc(HWND hDlg,
@@ -299,7 +316,7 @@ void RootWindowWin::ResizeToFitContent() {
   }
 
   // Transition to sign-in page.
-  else if (0 == url.find(urls::kTrackerSignin)) {
+  else if (IsSigninURL(url)) {
     window_size.Set(800, 625);
 
     // Disable window resizing.
@@ -310,7 +327,7 @@ void RootWindowWin::ResizeToFitContent() {
   }
 
   // Transition from sign-in page.
-  else if (last_url_.empty() || 0 == last_url_.find(urls::kTrackerSignin)) {
+  else if (last_url_.empty() || IsSigninURL(last_url_)) {
     window_size.Set(1050, 625);
 
     // Enable window resizing.
