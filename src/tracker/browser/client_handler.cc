@@ -663,6 +663,19 @@ void ClientHandler::OnLoadingStateChange(CefRefPtr<CefBrowser> browser,
       std::string project_id = url.substr(url.rfind('/') + 1);
       MainContext::Get()->GetClientSettings()->SetProjectId(project_id);
     }
+    else if (0 == url.find(urls::kTrackerSignin)) {
+      std::stringstream ss;
+      ss <<
+        "(function(w,d){"
+          // Hide scrollbars.
+          "d.querySelector('body').style.overflow='hidden';"
+          // Remove promotional content.
+          "el=d.querySelector('div.sticky_footer');"
+          "el.parentNode.removeChild(el);"
+        "})(window,document);";
+      CefRefPtr<CefFrame> frame = browser->GetMainFrame();
+      frame->ExecuteJavaScript(ss.str(), frame->GetURL(), 0);
+    }
   }
 
   NotifyLoadingState(isLoading, canGoBack, canGoForward);
