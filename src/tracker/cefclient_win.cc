@@ -56,8 +56,14 @@ int RunMain(HINSTANCE hInstance, int nCmdShow) {
   // Create a ClientApp of the correct type.
   CefRefPtr<CefApp> app;
   ClientApp::ProcessType process_type = ClientApp::GetProcessType(command_line);
-  if (process_type == ClientApp::BrowserProcess)
+  if (process_type == ClientApp::BrowserProcess) {
+    // Allow only one browser instance.
+    ::CreateMutex(nullptr, TRUE, L"Local\\86c30d51-9b1a-4633-a268-d707d074aa30");
+    if (ERROR_ALREADY_EXISTS == ::GetLastError())
+      return 1;
+
     app = new ClientAppBrowser();
+  }
   else if (process_type == ClientApp::RendererProcess)
     app = new ClientAppRenderer();
   else if (process_type == ClientApp::OtherProcess)
