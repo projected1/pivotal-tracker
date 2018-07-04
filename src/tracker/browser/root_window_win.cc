@@ -128,7 +128,9 @@ RootWindowWin::RootWindowWin()
       window_destroyed_(false),
       browser_destroyed_(false),
       called_enable_non_client_dpi_scaling_(false),
-      is_maximized_(false) {
+      is_maximized_(false),
+      first_frame_load_(true),
+      is_splash_screen_(false) {
   find_buff_[0] = 0;
 
   // Create a HRGN representing the draggable window area.
@@ -153,9 +155,12 @@ void RootWindowWin::Init(RootWindow::Delegate* delegate,
   DCHECK(!initialized_);
 
   delegate_ = delegate;
-  with_controls_ = config.with_controls;
-  with_osr_ = config.with_osr;
-  with_extension_ = config.with_extension;
+  is_splash_screen_ = config.splash_screen;
+  if (!is_splash_screen_) {
+    with_controls_ = config.with_controls;
+    with_osr_ = config.with_osr;
+    with_extension_ = config.with_extension;
+  }
 
   start_rect_.left = config.bounds.x;
   start_rect_.top = config.bounds.y;
@@ -287,8 +292,14 @@ void RootWindowWin::ResizeToFitContent() {
   const DWORD dwStyle =
     WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_THICKFRAME;
 
+  if (is_splash_screen_) {
+    window_size.Set(450, 600);
+    ::SetWindowLong(hwnd_, GWL_STYLE, WS_POPUP | WS_CLIPCHILDREN);
+    ::SetWindowLong(hwnd_, GWL_EXSTYLE, WS_EX_NOACTIVATE);
+  }
+
   // Transition to sign-in page.
-  if (0 == url.find(urls::kTrackerSignin)) {
+  else if (0 == url.find(urls::kTrackerSignin)) {
     window_size.Set(800, 625);
 
     // Disable window resizing.
@@ -342,7 +353,7 @@ void RootWindowWin::ResizeToFitContent() {
       window_rect.bottom - window_rect.top);
 
     // Restore window position and resize it.
-    Show(is_maximized_ ? ShowMaximized : ShowNormal);
+    Show(!is_splash_screen_ && is_maximized_ ? ShowMaximized : ShowNormal);
     SetBounds(bounds.x, bounds.y, bounds.width, bounds.height);
   }
 
@@ -382,6 +393,11 @@ bool RootWindowWin::WithExtension() const {
   return with_extension_;
 }
 
+bool RootWindowWin::IsSplashScreen() const {
+  REQUIRE_MAIN_THREAD();
+  return is_splash_screen_;
+}
+
 void RootWindowWin::CreateBrowserWindow(const std::string& startup_url) {
   if (with_osr_) {
     OsrRenderer::Settings settings = {};
@@ -416,8 +432,10 @@ void RootWindowWin::CreateRootWindow(const CefBrowserSettings& settings,
   CHECK(find_message_id_);
 
   is_maximized_ = MainContext::Get()->GetClientSettings()->GetMaximized();
-  const DWORD dwStyle =
+  const DWORD dwStyle = is_splash_screen_ ?
+    WS_POPUP | WS_CLIPCHILDREN :
     WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | (is_maximized_ ? WS_MAXIMIZE : 0);
+  const DWORD dwStyleEx = is_splash_screen_ ? WS_EX_NOACTIVATE : 0;
 
   int x, y, width, height;
   if (::IsRectEmpty(&start_rect_)) {
@@ -437,8 +455,8 @@ void RootWindowWin::CreateRootWindow(const CefBrowserSettings& settings,
   browser_settings_ = settings;
 
   // Create the main window initially hidden.
-  CreateWindow(window_class.c_str(), window_title.c_str(), dwStyle, x, y, width,
-               height, NULL, NULL, hInstance, this);
+  CreateWindowEx(dwStyleEx, window_class.c_str(), window_title.c_str(),
+    dwStyle, x, y, width, height, nullptr, nullptr, hInstance, this);
   CHECK(hwnd_);
 
   if (!called_enable_non_client_dpi_scaling_ && IsProcessPerMonitorDpiAware()) {
@@ -455,7 +473,7 @@ void RootWindowWin::CreateRootWindow(const CefBrowserSettings& settings,
 
   if (!initially_hidden) {
     // Show this window.
-    Show(is_maximized_ ? ShowMaximized : ShowNormal);
+    Show(!is_splash_screen_ && is_maximized_ ? ShowMaximized : ShowNormal);
   }
 }
 
@@ -705,8 +723,10 @@ void RootWindowWin::OnActivate(bool active) {
 
 void RootWindowWin::OnSize(UINT size) {
   if (size != SIZE_MINIMIZED) {
-    is_maximized_ = (size == SIZE_MAXIMIZED);
-    MainContext::Get()->GetClientSettings()->SetMaximized(is_maximized_);
+    if (!is_splash_screen_) {
+      is_maximized_ = (size == SIZE_MAXIMIZED);
+      MainContext::Get()->GetClientSettings()->SetMaximized(is_maximized_);
+    }
   }
   else {
     // Notify the browser window that it was hidden and do nothing further.

@@ -59,6 +59,9 @@ IDS_EXTENSIONS_SET_PAGE_COLOR_MANIFEST_JSON BINARY "..\\extensions\\set_page_col
 IDS_EXTENSIONS_SET_PAGE_COLOR_POPUP_HTML BINARY "..\\extensions\\set_page_color\\popup.html"
 IDS_EXTENSIONS_SET_PAGE_COLOR_POPUP_JS BINARY "..\\extensions\\set_page_color\\popup.js"
 
+IDS_SPLASH_SCREEN_HTML BINARY "..\\splash_screen.html"
+IDS_SPLASH_SCREEN_PNG BINARY "..\\splash_screen.png"
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // Icon

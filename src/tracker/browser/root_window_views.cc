@@ -193,6 +193,12 @@ bool RootWindowViews::WithExtension() const {
   return with_extension_;
 }
 
+bool RootWindowViews::IsSplashScreen() const {
+  REQUIRE_MAIN_THREAD();
+  LOG(WARNING) << "Splash screen is not implemented for views framework.";
+  return false;
+}
+
 bool RootWindowViews::WithControls() {
   CEF_REQUIRE_UI_THREAD();
   return with_controls_;

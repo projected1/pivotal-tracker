@@ -48,6 +48,7 @@ class RootWindowViews : public RootWindow,
   ClientWindowHandle GetWindowHandle() const OVERRIDE;
   bool WithWindowlessRendering() const OVERRIDE { return false; }
   bool WithExtension() const OVERRIDE;
+  bool IsSplashScreen() const OVERRIDE;
   void OnExtensionsChanged(const ExtensionSet& extensions) OVERRIDE;
 
   // ViewsWindow::Delegate methods:

@@ -8,6 +8,9 @@ namespace urls {
 // Chromium
 extern const char kChromeDevTools[];
 
+// Desktop client
+extern const char kSplashScreen[];
+
 // Tracker web-app
 extern const char kTrackerStory[];
 extern const char kTrackerSignin[];

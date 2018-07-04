@@ -49,6 +49,7 @@ class RootWindowWin : public RootWindow, public BrowserWindow::Delegate {
   ClientWindowHandle GetWindowHandle() const OVERRIDE;
   bool WithWindowlessRendering() const OVERRIDE;
   bool WithExtension() const OVERRIDE;
+  bool IsSplashScreen() const OVERRIDE;
 
  private:
   void CreateBrowserWindow(const std::string& startup_url);
@@ -117,6 +118,7 @@ class RootWindowWin : public RootWindow, public BrowserWindow::Delegate {
   bool with_extension_;
   bool is_popup_;
   RECT start_rect_;
+  bool is_splash_screen_;
   scoped_ptr<BrowserWindow> browser_window_;
   CefBrowserSettings browser_settings_;
   bool initialized_;
@@ -163,6 +165,9 @@ class RootWindowWin : public RootWindow, public BrowserWindow::Delegate {
 
   // Is window maximized.
   bool is_maximized_;
+
+  // Is first frame after startup.
+  bool first_frame_load_;
 
   DISALLOW_COPY_AND_ASSIGN(RootWindowWin);
 };

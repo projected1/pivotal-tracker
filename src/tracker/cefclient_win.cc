@@ -7,6 +7,7 @@
 #include "include/base/cef_scoped_ptr.h"
 #include "include/cef_command_line.h"
 #include "include/cef_sandbox_win.h"
+#include "tracker/browser/client_urls.h"
 #include "tracker/browser/main_context_impl.h"
 #include "tracker/browser/main_message_loop_multithreaded_win.h"
 #include "tracker/browser/root_window_manager.h"
@@ -98,6 +99,14 @@ int RunMain(HINSTANCE hInstance, int nCmdShow) {
 
   // Register scheme handlers.
   test_runner::RegisterSchemeHandlers();
+
+  RootWindowConfig splash_screen_config;
+  splash_screen_config.url = urls::kSplashScreen;
+  splash_screen_config.splash_screen = true;
+  splash_screen_config.initially_hidden = true;
+
+  // Create a splash screen.
+  context->GetRootWindowManager()->CreateRootWindow(splash_screen_config);
 
   RootWindowConfig window_config;
   window_config.with_osr = settings.windowless_rendering_enabled ? true : false;

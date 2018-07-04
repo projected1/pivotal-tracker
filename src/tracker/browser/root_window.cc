@@ -14,6 +14,7 @@ RootWindowConfig::RootWindowConfig()
       with_osr(false),
       with_extension(false),
       initially_hidden(false),
+      splash_screen(false),
       url(MainContext::Get()->GetMainURL()) {}
 
 RootWindow::RootWindow() : delegate_(NULL) {}

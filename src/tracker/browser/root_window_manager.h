@@ -114,6 +114,9 @@ class RootWindowManager : public RootWindow::Delegate {
   typedef std::set<scoped_refptr<RootWindow>> RootWindowSet;
   RootWindowSet root_windows_;
 
+  // Splash screen. Only accessed on the main thread.
+  scoped_refptr<RootWindow> splash_screen_;
+
   // The currently active/foreground RootWindow. Only accessed on the main
   // thread.
   scoped_refptr<RootWindow> active_root_window_;

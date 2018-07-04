@@ -38,8 +38,9 @@ namespace client {
 namespace {
 
 // URLs white-list.
-std::array<std::string, 14> url_whitelist {{
+std::array<std::string, 15> url_whitelist {{
   urls::kChromeDevTools,
+  urls::kSplashScreen,
   urls::kTrackerStory,
   urls::kTrackerSignin,
   urls::kTrackerProfile,
@@ -335,6 +336,12 @@ void ClientHandler::OnBeforeContextMenu(CefRefPtr<CefBrowser> browser,
                                         CefRefPtr<CefContextMenuParams> params,
                                         CefRefPtr<CefMenuModel> model) {
   CEF_REQUIRE_UI_THREAD();
+
+  // Hide context menu on splash-screens.
+  if (0 == frame->GetURL().ToString().find(urls::kSplashScreen)) {
+    model->Clear();
+    return;
+  }
 
   if ((params->GetTypeFlags() & (CM_TYPEFLAG_PAGE | CM_TYPEFLAG_FRAME)) != 0) {
     // Add a separator if the menu already has items.

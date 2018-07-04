@@ -5,6 +5,8 @@ namespace urls {
 
 const char kChromeDevTools[] = "chrome-devtools://devtools/inspector.html";
 
+const char kSplashScreen[] = "http://tests/splash_screen";
+
 const char kTrackerStory[] = "https://www.pivotaltracker.com/story/";
 const char kTrackerSignin[] = "https://www.pivotaltracker.com/signin";
 const char kTrackerProfile[] = "https://www.pivotaltracker.com/profile";

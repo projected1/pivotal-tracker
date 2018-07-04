@@ -1,0 +1,47 @@
+<html>
+<head>
+<title>Pivotal Tracker</title>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  overflow: hidden;
+}
+#container {
+  position: relative;
+  width: 450px;
+  height: 600px;
+  background: #517a9b url(http://tests/splash_screen.png) no-repeat;
+}
+#slider {
+  position: absolute;
+  bottom: 0;
+  width: 0;
+  height: 1px;
+  background-color: #fff;
+}
+</style>
+<script>
+  const DELAY = 10; // 10msc
+  const DURATION = 5000; // 5s
+  document.addEventListener('DOMContentLoaded', () => {
+    var slider = document.getElementById('slider');
+    var container = document.getElementById('container');
+    var width = 0;
+    var steps = DURATION / DELAY;
+    var delta = container.offsetWidth / steps;
+    var intervalId = setInterval(() => {
+      if (!--steps)
+        clearInterval(intervalId);
+      width += delta;
+      slider.setAttribute('style', 'width:' + width + 'px');
+    }, DELAY);
+  });
+</script>
+</head>
+<body id="container">
+  <div id="slider"/>
+</body>
+</html>

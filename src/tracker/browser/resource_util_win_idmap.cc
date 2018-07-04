@@ -46,6 +46,8 @@ int GetResourceId(const char* resource_name) {
       {"window_icon.1x.png", IDS_WINDOW_ICON_1X_PNG},
       {"window_icon.2x.png", IDS_WINDOW_ICON_2X_PNG},
       {"xmlhttprequest.html", IDS_XMLHTTPREQUEST_HTML},
+      {"splash_screen.html", IDS_SPLASH_SCREEN_HTML},
+      {"splash_screen.png", IDS_SPLASH_SCREEN_PNG},
   };
 
   for (size_t i = 0; i < sizeof(resource_map) / sizeof(_resource_map); ++i) {

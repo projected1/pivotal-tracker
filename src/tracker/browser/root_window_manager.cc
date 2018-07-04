@@ -133,6 +133,7 @@ RootWindowManager::RootWindowManager(bool terminate_when_all_windows_closed)
 RootWindowManager::~RootWindowManager() {
   // All root windows should already have been destroyed.
   DCHECK(root_windows_.empty());
+  DCHECK(!splash_screen_);
 }
 
 scoped_refptr<RootWindow> RootWindowManager::CreateRootWindow(
@@ -255,6 +256,9 @@ void RootWindowManager::CloseAllWindows(bool force) {
     return;
   }
 
+  if (splash_screen_)
+    splash_screen_->Close(force);
+
   if (root_windows_.empty())
     return;
 
@@ -295,7 +299,11 @@ void RootWindowManager::OnRootWindowCreated(
     return;
   }
 
-  root_windows_.insert(root_window);
+  if (root_window->IsSplashScreen())
+    splash_screen_ = root_window;
+  else
+    root_windows_.insert(root_window);
+
   if (!root_window->WithExtension()) {
     root_window->OnExtensionsChanged(extensions_);
 
@@ -377,10 +385,14 @@ void RootWindowManager::OnExit(RootWindow* root_window) {
 void RootWindowManager::OnRootWindowDestroyed(RootWindow* root_window) {
   REQUIRE_MAIN_THREAD();
 
-  RootWindowSet::iterator it = root_windows_.find(root_window);
-  DCHECK(it != root_windows_.end());
-  if (it != root_windows_.end())
-    root_windows_.erase(it);
+  if (root_window == splash_screen_)
+    splash_screen_ = nullptr;
+  else {
+    RootWindowSet::iterator it = root_windows_.find(root_window);
+    DCHECK(it != root_windows_.end());
+    if (it != root_windows_.end())
+      root_windows_.erase(it);
+  }
 
   if (root_window == active_root_window_) {
     active_root_window_ = NULL;
@@ -389,7 +401,8 @@ void RootWindowManager::OnRootWindowDestroyed(RootWindow* root_window) {
     active_browser_ = NULL;
   }
 
-  if (terminate_when_all_windows_closed_ && root_windows_.empty()) {
+  if (terminate_when_all_windows_closed_ && root_windows_.empty() &&
+      !splash_screen_) {
     // Quit the main message loop after all windows have closed.
     MainMessageLoop::Get()->Quit();
   }
@@ -414,6 +427,10 @@ void RootWindowManager::OnRootWindowActivated(RootWindow* root_window) {
     // OnBrowserCreated.
     active_browser_ = active_root_window_->GetBrowser();
   }
+
+  if (splash_screen_ && !root_window->IsSplashScreen() &&
+    active_browser_ && !active_browser_->IsLoading())
+    splash_screen_->Close(false);
 }
 
 void RootWindowManager::OnBrowserCreated(RootWindow* root_window,

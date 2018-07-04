@@ -35,6 +35,9 @@ struct RootWindowConfig {
   // If true the window will be created initially hidden.
   bool initially_hidden;
 
+  // If true the window will be created without a frame.
+  bool splash_screen;
+
   // Requested window position. If |bounds| and |source_bounds| are empty the
   // default window size and location will be used.
   CefRect bounds;
@@ -185,6 +188,9 @@ class RootWindow
 
   // Returns true if this window is hosting an extension app.
   virtual bool WithExtension() const = 0;
+
+  // Returns true if this window is a splash screen.
+  virtual bool IsSplashScreen() const = 0;
 
   // Called when the set of loaded extensions changes. The default
   // implementation will create a single window instance for each extension.
