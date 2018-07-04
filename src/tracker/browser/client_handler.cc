@@ -339,6 +339,12 @@ void ClientHandler::OnBeforeContextMenu(CefRefPtr<CefBrowser> browser,
                                         CefRefPtr<CefMenuModel> model) {
   CEF_REQUIRE_UI_THREAD();
 
+#if defined(NDEBUG)
+  // Hide context menu in release builds.
+  model->Clear();
+  return;
+#endif
+
   // Hide context menu on splash-screens.
   if (0 == frame->GetURL().ToString().find(urls::kSplashScreen)) {
     model->Clear();
@@ -346,6 +352,12 @@ void ClientHandler::OnBeforeContextMenu(CefRefPtr<CefBrowser> browser,
   }
 
   if ((params->GetTypeFlags() & (CM_TYPEFLAG_PAGE | CM_TYPEFLAG_FRAME)) != 0) {
+    // Only keep "View page source" item.
+    model->RemoveAt(3); // Remove "Print..."
+    model->RemoveAt(2); // Remove "Separator"
+    model->RemoveAt(1); // Remove "Forward"
+    model->RemoveAt(0); // Remove "Back"
+
     // Add a separator if the menu already has items.
     if (model->GetCount() > 0)
       model->AddSeparator();
@@ -360,9 +372,6 @@ void ClientHandler::OnBeforeContextMenu(CefRefPtr<CefBrowser> browser,
       model->AddSeparator();
       model->AddItem(CLIENT_ID_SHOW_SSL_INFO, "Show SSL information");
     }
-
-    // Test context menu features.
-    BuildTestMenu(model);
   }
 
   if (delegate_)
