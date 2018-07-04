@@ -178,18 +178,20 @@ void LoadErrorPage(CefRefPtr<CefFrame> frame,
                    cef_errorcode_t error_code,
                    const std::string& other_info) {
   std::stringstream ss;
-  ss << "<html><head><title>Page failed to load</title></head>"
-        "<body bgcolor=\"white\">"
-        "<h3>Page failed to load.</h3>"
-        "URL: <a href=\""
-     << failed_url << "\">" << failed_url
-     << "</a><br/>Error: " << test_runner::GetErrorString(error_code) << " ("
-     << error_code << ")";
-
-  if (!other_info.empty())
-    ss << "<br/>" << other_info;
-
-  ss << "</body></html>";
+  ss <<
+    "<head><title>Pivotal Tracker</title></head>"
+    "<body style='font-family:open-sans, sans-serif;background-color:#f3f4f4'>"
+      "<div style='color:#6f6f6f;width:400px;height:200px;position:absolute;left:50%;top:50%;margin-left:-200px;margin-top:-150px'>"
+        "<h2 style='color:#3c4858'>There is no Internet connection</h2>"
+        "<p>Try:"
+          "<ul>"
+            "<li>Checking the network cables, modem, and router</li>"
+            "<li>Reconnecting to Wi-Fi</li>"
+          "</ul>"
+        "</p>"
+        "<p style='font-size:12px'>" << test_runner::GetErrorString(error_code) << "</p>"
+      "</div>"
+    "</body>";
   frame->LoadURL(test_runner::GetDataURI(ss.str(), "text/html"));
 }
 
