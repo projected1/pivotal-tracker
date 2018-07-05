@@ -59,14 +59,14 @@ MainContextImpl::MainContextImpl(CefRefPtr<CefCommandLine> command_line,
   settings_serializer_.Deserialize(*client_settings_.get());
 
   // Ensure we have a valid client app ID.
-  std::string client_id = client_settings_->GetClientId();
-  if (client_id.empty()) {
-    client_id = rand_util::GenerateGUID();
-    client_settings_->SetClientId(client_id);
+  client_id_ = client_settings_->GetClientId();
+  if (client_id_.empty()) {
+    client_id_ = rand_util::GenerateGUID();
+    client_settings_->SetClientId(client_id_);
   }
 
   // Init the application analytics object.
-  analytics_.reset(Analytics::Create(client_id));
+  analytics_.reset(Analytics::Create(client_id_));
 
   // Init the heartbeat analytics event thread.
   heartbeat_thread_.reset(new std::thread([] {
@@ -229,6 +229,10 @@ Analytics* MainContextImpl::GetAnalytics() {
 URLRequestManager* MainContextImpl::GetURLRequestManager() {
   DCHECK(InValidState());
   return url_request_manager_.get();
+}
+
+std::string MainContextImpl::GetClientID() {
+  return client_id_;
 }
 
 void MainContextImpl::OnSettingsChanged() {

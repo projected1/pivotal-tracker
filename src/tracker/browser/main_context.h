@@ -64,6 +64,9 @@ class MainContext {
   // Returns the object used to create/manage CefURLRequest instances.
   virtual URLRequestManager* GetURLRequestManager() = 0;
 
+  // Get a unique client app ID.
+  virtual std::string GetClientID() = 0;
+
  protected:
   MainContext();
   virtual ~MainContext();

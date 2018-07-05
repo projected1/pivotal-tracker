@@ -18,6 +18,7 @@
 #include "include/cef_ssl_status.h"
 #include "include/cef_x509_certificate.h"
 #include "include/wrapper/cef_closure_task.h"
+#include "tracker/browser/app_info.h"
 #include "tracker/browser/client_urls.h"
 #include "tracker/browser/main_context.h"
 #include "tracker/browser/root_window_manager.h"
@@ -662,13 +663,31 @@ void ClientHandler::OnLoadingStateChange(CefRefPtr<CefBrowser> browser,
   CEF_REQUIRE_UI_THREAD();
 
   if (!isLoading) {
+    std::stringstream ss;
+    ss <<
+      "(function(w,d){"
+        // Init Google Analytics.
+        "(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){"
+        "(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),"
+        "m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)"
+        "})(w,d,'script','https://www.google-analytics.com/analytics.js','ga');"
+        // Create a new tracker object.
+        "ga('create','" << GA_ACCOUNT_ID << "','auto',"
+          "{'clientId':'" << MainContext::Get()->GetClientID() << "'});"
+        // Send a pageview.
+        "ga('send','pageview');"
+        // Send mouse click events.
+        "d.addEventListener('mousedown',function(){"
+          "ga('send','event','webapp','click');"
+        "});"
+      "})(window,document);";
+
     std::string url = browser->GetMainFrame()->GetURL().ToString();
     if (0 == url.find(urls::kTrackerNProjects)) {
       std::string project_id = url.substr(url.rfind('/') + 1);
       MainContext::Get()->GetClientSettings()->SetProjectId(project_id);
     }
     else if (0 == url.find(urls::kTrackerSignin)) {
-      std::stringstream ss;
       ss <<
         "(function(w,d){"
           // Hide scrollbars.
@@ -677,9 +696,10 @@ void ClientHandler::OnLoadingStateChange(CefRefPtr<CefBrowser> browser,
           "el=d.querySelector('div.sticky_footer');"
           "el.parentNode.removeChild(el);"
         "})(window,document);";
-      CefRefPtr<CefFrame> frame = browser->GetMainFrame();
-      frame->ExecuteJavaScript(ss.str(), frame->GetURL(), 0);
     }
+
+    CefRefPtr<CefFrame> frame = browser->GetMainFrame();
+    frame->ExecuteJavaScript(ss.str(), frame->GetURL(), 0);
   }
 
   NotifyLoadingState(isLoading, canGoBack, canGoForward);

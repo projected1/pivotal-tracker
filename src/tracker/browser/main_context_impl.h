@@ -41,6 +41,7 @@ class MainContextImpl : public MainContext,
   ClientSettings* GetClientSettings() OVERRIDE;
   Analytics* GetAnalytics() OVERRIDE;
   URLRequestManager* GetURLRequestManager() OVERRIDE;
+  std::string GetClientID() OVERRIDE;
 
   // ClientSettings::Delegate members.
   void OnSettingsChanged() OVERRIDE;
@@ -76,6 +77,7 @@ class MainContextImpl : public MainContext,
   bool shutdown_;
 
   std::string main_url_;
+  std::string client_id_;
   cef_color_t background_color_;
   cef_color_t browser_background_color_;
   bool use_windowless_rendering_;
