@@ -6,6 +6,8 @@
 #define CEF_TESTS_CEFCLIENT_BROWSER_MAIN_CONTEXT_IMPL_H_
 #pragma once
 
+#include <thread>
+
 #include "include/base/cef_scoped_ptr.h"
 #include "include/base/cef_thread_checker.h"
 #include "include/cef_app.h"
@@ -88,6 +90,9 @@ class MainContextImpl : public MainContext,
 
   // Used to verify that methods are called on the correct thread.
   base::ThreadChecker thread_checker_;
+
+  // Heartbeat analytics thread.
+  scoped_ptr<std::thread> heartbeat_thread_;
 
   DISALLOW_COPY_AND_ASSIGN(MainContextImpl);
 };

@@ -14,6 +14,12 @@ namespace client {
 
 namespace {
 
+// Send a heartbeat analytics event.
+void TrackHeartbeat() {
+  CEF_REQUIRE_UI_THREAD();
+  MainContext::Get()->GetAnalytics()->TrackEvent("desktop", "heartbeat");
+}
+
 // Returns the ARGB value for |color|.
 cef_color_t ParseColor(const std::string& color) {
   std::string colorToLower;
@@ -61,6 +67,15 @@ MainContextImpl::MainContextImpl(CefRefPtr<CefCommandLine> command_line,
 
   // Init the application analytics object.
   analytics_.reset(Analytics::Create(client_id));
+
+  // Init the heartbeat analytics event thread.
+  heartbeat_thread_.reset(new std::thread([] {
+    using namespace std::chrono_literals;
+    while (1) {
+      CefPostTask(TID_UI, base::Bind(&TrackHeartbeat));
+      std::this_thread::sleep_for(1min);
+    }
+  }));
 
   // Set the main URL.
   if (command_line_->HasSwitch(switches::kUrl))
@@ -248,6 +263,8 @@ void MainContextImpl::Shutdown() {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(initialized_);
   DCHECK(!shutdown_);
+
+  heartbeat_thread_.reset();
 
   url_request_manager_.reset();
 
