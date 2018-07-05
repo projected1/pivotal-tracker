@@ -8,6 +8,7 @@
 #include "include/cef_web_plugin.h"
 #include "shared/common/client_switches.h"
 #include "tracker/browser/client_urls.h"
+#include "tracker/browser/rand_util.h"
 
 namespace client {
 
@@ -50,6 +51,16 @@ MainContextImpl::MainContextImpl(CefRefPtr<CefCommandLine> command_line,
   // Init the client settings and subscribe for settings changes.
   client_settings_.reset(new ClientSettings(this));
   settings_serializer_.Deserialize(*client_settings_.get());
+
+  // Ensure we have a valid client app ID.
+  std::string client_id = client_settings_->GetClientId();
+  if (client_id.empty()) {
+    client_id = rand_util::GenerateGUID();
+    client_settings_->SetClientId(client_id);
+  }
+
+  // Init the application analytics object.
+  analytics_.reset(Analytics::Create(client_id));
 
   // Set the main URL.
   if (command_line_->HasSwitch(switches::kUrl))
@@ -195,6 +206,16 @@ ClientSettings* MainContextImpl::GetClientSettings() {
   return client_settings_.get();
 }
 
+Analytics* MainContextImpl::GetAnalytics() {
+  DCHECK(InValidState());
+  return analytics_.get();
+}
+
+URLRequestManager* MainContextImpl::GetURLRequestManager() {
+  DCHECK(InValidState());
+  return url_request_manager_.get();
+}
+
 void MainContextImpl::OnSettingsChanged() {
   settings_serializer_.Serialize(*client_settings_.get());
 }
@@ -215,6 +236,9 @@ bool MainContextImpl::Initialize(const CefMainArgs& args,
   root_window_manager_.reset(
       new RootWindowManager(terminate_when_all_windows_closed_));
 
+  // Init the URL request manager.
+  url_request_manager_.reset(new URLRequestManager());
+
   initialized_ = true;
 
   return true;
@@ -224,6 +248,8 @@ void MainContextImpl::Shutdown() {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(initialized_);
   DCHECK(!shutdown_);
+
+  url_request_manager_.reset();
 
   root_window_manager_.reset();
 

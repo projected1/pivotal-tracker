@@ -13,6 +13,7 @@
 #include "tracker/browser/main_context.h"
 #include "tracker/browser/root_window_manager.h"
 #include "tracker/browser/settings_serializer.h"
+#include "tracker/browser/url_request_manager.h"
 
 namespace client {
 
@@ -36,6 +37,8 @@ class MainContextImpl : public MainContext,
   void PopulateOsrSettings(OsrRenderer::Settings* settings) OVERRIDE;
   RootWindowManager* GetRootWindowManager() OVERRIDE;
   ClientSettings* GetClientSettings() OVERRIDE;
+  Analytics* GetAnalytics() OVERRIDE;
+  URLRequestManager* GetURLRequestManager() OVERRIDE;
 
   // ClientSettings::Delegate members.
   void OnSettingsChanged() OVERRIDE;
@@ -78,6 +81,8 @@ class MainContextImpl : public MainContext,
 
   scoped_ptr<RootWindowManager> root_window_manager_;
   scoped_ptr<ClientSettings> client_settings_;
+  scoped_ptr<Analytics> analytics_;
+  scoped_ptr<URLRequestManager> url_request_manager_;
 
   SettingsSerializer settings_serializer_;
 

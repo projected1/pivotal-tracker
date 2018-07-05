@@ -8,6 +8,9 @@
 
 # tracker browser sources.
 set(CEFCLIENT_BROWSER_BROWSER_SRCS
+  browser/analytics.cc
+  browser/analytics.h
+  browser/app_info.h
   browser/binding_test.cc
   browser/binding_test.h
   browser/browser_window.cc
@@ -32,6 +35,8 @@ set(CEFCLIENT_BROWSER_BROWSER_SRCS
   browser/dialog_test.h
   browser/drm_test.cc
   browser/drm_test.h
+  browser/google_analytics.cc
+  browser/google_analytics.h
   browser/image_cache.cc
   browser/image_cache.h
   browser/main_context.cc
@@ -43,6 +48,8 @@ set(CEFCLIENT_BROWSER_BROWSER_SRCS
   browser/osr_renderer.h
   browser/preferences_test.cc
   browser/preferences_test.h
+  browser/rand_util.cc
+  browser/rand_util.h
   browser/resource.h
   browser/response_filter_test.cc
   browser/response_filter_test.h
@@ -60,6 +67,8 @@ set(CEFCLIENT_BROWSER_BROWSER_SRCS
   browser/temp_window.h
   browser/test_runner.cc
   browser/test_runner.h
+  browser/url_request_manager.cc
+  browser/url_request_manager.h
   browser/urlrequest_test.cc
   browser/urlrequest_test.h
   browser/window_test.cc

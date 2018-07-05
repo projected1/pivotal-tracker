@@ -10,12 +10,14 @@
 
 #include "include/base/cef_ref_counted.h"
 #include "include/internal/cef_types_wrappers.h"
+#include "tracker/browser/analytics.h"
 #include "tracker/browser/osr_renderer.h"
 #include "tracker/browser/client_settings.h"
 
 namespace client {
 
 class RootWindowManager;
+class URLRequestManager;
 
 // Used to store global context in the browser process. The methods of this
 // class are thread-safe unless otherwise indicated.
@@ -55,6 +57,12 @@ class MainContext {
 
   // Returns the object used to store serialized client settings.
   virtual ClientSettings* GetClientSettings() = 0;
+
+  // Returns the object used to manage application Analytics.
+  virtual Analytics* GetAnalytics() = 0;
+
+  // Returns the object used to create/manage CefURLRequest instances.
+  virtual URLRequestManager* GetURLRequestManager() = 0;
 
  protected:
   MainContext();

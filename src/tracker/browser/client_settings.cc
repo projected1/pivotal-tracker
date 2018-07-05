@@ -33,4 +33,17 @@ void ClientSettings::SetMaximized(bool maximized) {
     delegate_->OnSettingsChanged();
 }
 
+const std::string& ClientSettings::GetClientId() const {
+  return client_id_;
+}
+
+void ClientSettings::SetClientId(const std::string& client_id) {
+  if (client_id_ == client_id)
+    return;
+
+  client_id_ = client_id;
+  if (delegate_)
+    delegate_->OnSettingsChanged();
+}
+
 }  // namespace client

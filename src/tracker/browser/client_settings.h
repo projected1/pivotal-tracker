@@ -24,6 +24,9 @@ class ClientSettings : public CefBaseRefCounted {
   bool GetMaximized() const;
   void SetMaximized(bool maximized);
 
+  const std::string& GetClientId() const;
+  void SetClientId(const std::string& client_id);
+
  private:
   friend class SettingsSerializer;
 
@@ -31,6 +34,7 @@ class ClientSettings : public CefBaseRefCounted {
 
   std::string project_id_;
   bool maximized_;
+  std::string client_id_;
 
   IMPLEMENT_REFCOUNTING(ClientSettings);
   DISALLOW_COPY_AND_ASSIGN(ClientSettings);

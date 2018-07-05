@@ -1,6 +1,7 @@
 // Microsoft Visual C++ generated resource script.
 //
 #include "tracker/browser/resource.h"
+#include "tracker/browser/app_info.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
@@ -162,12 +163,12 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "FileDescription", "Tracker Desktop Client"
-            VALUE "FileVersion", CEF_VERSION
-            VALUE "InternalName", "Tracker"
+            VALUE "FileVersion", APP_VERSION
+            VALUE "InternalName", APP_NAME
             VALUE "LegalCopyright", "Copyright (C) " MAKE_STRING(COPYRIGHT_YEAR)
             VALUE "OriginalFilename", "tracker.exe"
-            VALUE "ProductName", "Tracker"
-            VALUE "ProductVersion", CEF_VERSION
+            VALUE "ProductName", APP_NAME
+            VALUE "ProductVersion", APP_VERSION
         END
     END
     BLOCK "VarFileInfo"

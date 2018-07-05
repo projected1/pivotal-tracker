@@ -1,0 +1,12 @@
+#ifndef CEF_TESTS_CEFCLIENT_BROWSER_APP_INFO_H_
+#define CEF_TESTS_CEFCLIENT_BROWSER_APP_INFO_H_
+#pragma once
+
+#define APP_ID "com.cef.tracker"
+#define APP_NAME "Tracker"
+#define APP_VERSION "1.0.0"
+#define APP_VERSION_MAJOR 1
+
+#define GA_ACCOUNT_ID "UA-117525219-1"
+
+#endif  // CEF_TESTS_CEFCLIENT_BROWSER_APP_INFO_H_
