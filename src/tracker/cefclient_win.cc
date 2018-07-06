@@ -2,6 +2,8 @@
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 
+#include <fstream>
+
 #include <windows.h>
 
 #include "include/base/cef_scoped_ptr.h"
@@ -33,6 +35,9 @@
 
 namespace client {
 namespace {
+
+// Filename, whose presence indicates a first app run.
+const char kFirstRunFilename[] = "first_run";
 
 int RunMain(HINSTANCE hInstance, int nCmdShow) {
   // Enable High-DPI support on Windows 7 or newer.
@@ -102,6 +107,13 @@ int RunMain(HINSTANCE hInstance, int nCmdShow) {
 
   // Initialize CEF.
   context->Initialize(main_args, settings, app, sandbox_info);
+
+  // Send analytics event on first app run.
+  std::string first_run_file =
+    context->GetAppWorkingDirectory() + kFirstRunFilename;
+  if (std::fstream(first_run_file))
+    if (0 == std::remove(first_run_file.c_str()))
+      context->GetAnalytics()->TrackEvent("desktop", "first_run");
 
   // Register scheme handlers.
   test_runner::RegisterSchemeHandlers();
